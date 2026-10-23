@@ -9,6 +9,16 @@
 
 ---
 
+## 📥 Download App
+
+Get the latest ready-to-install Android package:
+
+👉 **[Download ClariStatus v1.0 APK](release/ClariStatus-v1.0.apk)** *(~14 MB, Signed)*
+
+> **Installation Note:** Transfer or download the `.apk` file onto your Android device, tap to open, and enable *"Install from unknown sources"* if prompted by your browser or file manager.
+
+---
+
 ## 🔍 The Problem with WhatsApp Status
 
 Whenever you upload a video directly through WhatsApp for Android's Status tab:
@@ -63,7 +73,7 @@ graph TD
 ## 📁 Repository Structure
 
 ```text
-├── ClariStatus/             # Modern Android App (Kotlin + Jetpack Compose)
+├── android/                 # Modern Android App (Kotlin + Jetpack Compose)
 │   ├── app/src/main/java/
 │   │   └── com/claristatus/app/
 │   │       ├── data/        # Models & Presets
@@ -79,6 +89,9 @@ graph TD
 │   ├── package.json
 │   └── README.md            # Detailed bot setup instructions
 │
+├── release/                 # Pre-built APKs
+│   └── ClariStatus-v1.0.apk # Direct download package
+│
 ├── LICENSE                  # GNU General Public License v3.0 (GPL-3.0)
 └── README.md
 ```
@@ -93,13 +106,13 @@ Prerequisites: Android Studio or Android SDK with command-line tools.
 ```bash
 # Clone the repository
 git clone https://github.com/<your-username>/ClariStatus.git
-cd ClariStatus/ClariStatus
+cd ClariStatus/android
 
-# Build the debug APK
-./gradlew assembleDebug
+# Build the release APK
+./gradlew assembleRelease
 
 # Install on your connected Android device
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
 ### 2. Set Up the PC Companion Bot (For 1080p)

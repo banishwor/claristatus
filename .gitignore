@@ -18,6 +18,7 @@ npm-debug.log*
 # Test and media files
 *.mp4
 *.apk
+!release/*.apk
 *.xapk
 
 # OS generated files

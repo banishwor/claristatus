@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClariStatus Desktop Companion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Custom Frameless Titlebar -->
+    <header class="titlebar">
+        <div class="titlebar-brand">
+            <span class="logo-icon">🎬</span>
+            <span>ClariStatus Companion</span>
+        </div>
+        <div class="titlebar-controls">
+            <button id="btn-win-minimize" class="control-btn" title="Minimize">─</button>
+            <button id="btn-win-close" class="control-btn close" title="Close to Tray">✕</button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- VIEW 1: PAIRING / QR CODE -->
+        <section id="view-pairing" class="view active">
+            <div class="view-header">
+                <h2>Link ClariStatus Companion</h2>
+                <p>Scan with WhatsApp to enable 1080p Full HD status uploads</p>
+            </div>
+
+            <div class="qr-wrapper">
+                <div class="qr-box" id="qr-box">
+                    <div class="qr-placeholder" id="qr-placeholder">
+                        <div class="spinner"></div>
+                        <span>Generating WhatsApp QR...</span>
+                    </div>
+                    <img id="qr-image" src="" alt="WhatsApp QR Code" style="display: none;">
+                </div>
+            </div>
+
+            <div class="steps-card">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Open <strong>WhatsApp</strong> on your phone.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Tap Menu <strong>⋮</strong> or Settings $\rightarrow$ <strong>Linked Devices</strong>.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Tap <strong>Link a Device</strong> and point your camera here.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: CONNECTED & ONLINE -->
+        <section id="view-connected" class="view">
+            <div class="status-hero">
+                <div class="status-badge">
+                    <span class="pulse-dot"></span>
+                    <span>ONLINE & READY</span>
+                </div>
+                <h2 class="hero-title">WhatsApp Linked</h2>
+                <p class="hero-subtitle">Ready to receive 1080p Full HD videos from ClariStatus Android</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-label">Host Machine</span>
+                    <span class="info-val" id="val-hostname">Detecting...</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">Local Wi-Fi IP</span>
+                    <div class="info-val">
+                        <span id="val-ip">127.0.0.1:3000</span>
+                        <button class="copy-btn" id="btn-copy-ip" title="Copy IP">Copy</button>
+                    </div>
+                </div>
+                <div class="info-card" style="grid-column: span 2;">
+                    <span class="info-label">Wi-Fi Auto-Discovery</span>
+                    <span class="info-val" style="color: var(--emerald-light);">
+                        <span>📡 Active (Port 3001)</span>
+                        <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">Zero-config phone pairing</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="feed-card">
+                <div class="feed-header">
+                    <span class="feed-title">
+                        <span>⚡ Live Activity Log</span>
+                    </span>
+                    <span id="activity-status" style="font-size: 11px; color: var(--text-muted);">Listening</span>
+                </div>
+                <div class="feed-list" id="feed-list">
+                    <div class="feed-empty" id="feed-empty">
+                        No videos received yet.<br>Compress a video on ClariStatus and tap 1080p!
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn btn-primary" id="btn-minimize-tray">
+                    <span>🔔 Minimize to Tray</span>
+                </button>
+                <button class="btn btn-danger" id="btn-unlink">
+                    <span>Unlink</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

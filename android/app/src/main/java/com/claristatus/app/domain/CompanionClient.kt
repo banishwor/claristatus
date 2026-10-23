@@ -10,12 +10,22 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
 import java.io.File
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 data class CompanionStatus(
     val isOnline: Boolean,
     val isWhatsAppConnected: Boolean,
     val defaultPhone: String?
+)
+
+data class DiscoveredCompanion(
+    val ip: String,
+    val name: String,
+    val port: Int = 3000,
+    val isWhatsAppConnected: Boolean
 )
 
 object CompanionClient {
@@ -71,6 +81,39 @@ object CompanionClient {
                 Result.failure(e)
             }
         }
+
+    suspend fun discoverCompanionOnLan(timeoutMs: Int = 1800): DiscoveredCompanion? = withContext(Dispatchers.IO) {
+        var socket: DatagramSocket? = null
+        try {
+            socket = DatagramSocket().apply {
+                broadcast = true
+                soTimeout = timeoutMs
+            }
+            val query = "claristatus-discover".toByteArray()
+            val broadcastAddr = InetAddress.getByName("255.255.255.255")
+            val packet = DatagramPacket(query, query.size, broadcastAddr, 3001)
+            socket.send(packet)
+
+            val buffer = ByteArray(1024)
+            val receivePacket = DatagramPacket(buffer, buffer.size)
+            socket.receive(receivePacket)
+
+            val responseStr = String(receivePacket.data, 0, receivePacket.length)
+            val json = JSONObject(responseStr)
+            if (json.optString("service") == "claristatus-companion") {
+                DiscoveredCompanion(
+                    ip = receivePacket.address.hostAddress ?: "",
+                    name = json.optString("name", "PC Companion"),
+                    port = json.optInt("port", 3000),
+                    isWhatsAppConnected = json.optBoolean("isWhatsAppConnected", false)
+                )
+            } else null
+        } catch (_: Exception) {
+            null
+        } finally {
+            socket?.close()
+        }
+    }
 
     suspend fun sendVideoViaCompanion(
         context: Context,

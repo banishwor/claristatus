@@ -83,7 +83,7 @@ graph TD
 │   │       └── MainActivity.kt
 │   └── build.gradle.kts
 │
-├── whatsapp-hd-bot/         # Local PC Companion (Node.js + Baileys)
+├── pc-companion/           # Local PC Companion (Node.js + Baileys)
 │   ├── server.js            # Express LAN server receiving videos from ClariStatus
 │   ├── send-hd.js           # CLI testing utility
 │   ├── package.json
@@ -119,7 +119,7 @@ adb install -r app/build/outputs/apk/release/app-release.apk
 Prerequisites: Node.js 18+ on your PC.
 
 ```bash
-cd whatsapp-hd-bot
+cd pc-companion
 
 # Install dependencies
 npm install
@@ -131,7 +131,7 @@ npm start
 2. Note your PC's local IP address (run `ipconfig` on Windows or `ifconfig` on Mac/Linux).
 3. In ClariStatus on your phone, after compressing a 30s video, tap **1080p**, enter your PC's IP, and tap **Send to WhatsApp Status**.
 
-*(For detailed instructions, see [`whatsapp-hd-bot/README.md`](whatsapp-hd-bot/README.md))*
+*(For detailed instructions, see [`pc-companion/README.md`](pc-companion/README.md))*
 
 ---
 

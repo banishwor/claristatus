@@ -19,6 +19,8 @@ npm-debug.log*
 *.mp4
 *.apk
 !release/*.apk
+release/*.exe
+release/*.zip
 *.xapk
 
 # OS generated files

@@ -7,17 +7,7 @@
 
 **ClariStatus** is a 100% free, private, and open-source video compressor and WhatsApp Status optimizer for Android. It bypasses WhatsApp's aggressive status degradation, delivering pristine **1080p Full HD (1152 × 1920 @ 4.1 Mbps)** and **720p HD (768 × 1280 @ 2.6 Mbps)** status videos with **zero ads, zero subscriptions, zero coin paywalls, and zero external cloud servers**.
 
----
 
-## 📥 Download App
-
-Get the latest ready-to-install Android package:
-
-👉 **[Download ClariStatus v1.0 APK](release/ClariStatus-v1.0.apk)** *(~14 MB, Signed)*
-
-> **Installation Note:** Transfer or download the `.apk` file onto your Android device, tap to open, and enable *"Install from unknown sources"* if prompted by your browser or file manager.
-
----
 
 ## 🔍 The Problem with WhatsApp Status
 
@@ -88,10 +78,6 @@ graph TD
 │   ├── send-hd.js           # CLI testing utility
 │   ├── package.json
 │   └── README.md            # Detailed bot setup instructions
-│
-├── release/                 # Pre-built APKs
-│   └── ClariStatus-v1.0.apk # Direct download package
-│
 ├── LICENSE                  # GNU General Public License v3.0 (GPL-3.0)
 └── README.md
 ```

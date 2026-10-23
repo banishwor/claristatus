@@ -4,6 +4,7 @@ const viewConnected = document.getElementById('view-connected');
 
 const qrImage = document.getElementById('qr-image');
 const qrPlaceholder = document.getElementById('qr-placeholder');
+const qrStatusText = document.getElementById('qr-status-text');
 
 const valHostname = document.getElementById('val-hostname');
 const valIp = document.getElementById('val-ip');
@@ -16,6 +17,7 @@ const btnWinMinimize = document.getElementById('btn-win-minimize');
 const btnWinClose = document.getElementById('btn-win-close');
 const btnMinimizeTray = document.getElementById('btn-minimize-tray');
 const btnUnlink = document.getElementById('btn-unlink');
+const btnResetSession = document.getElementById('btn-reset-session');
 
 // Window Controls
 btnWinMinimize?.addEventListener('click', () => {
@@ -39,13 +41,17 @@ btnCopyIp?.addEventListener('click', () => {
     }, 1500);
 });
 
-btnUnlink?.addEventListener('click', async () => {
-    if (confirm('Unlink this device from WhatsApp? You will need to scan a new QR code to reconnect.')) {
-        btnUnlink.textContent = 'Unlinking...';
+async function handleUnlink() {
+    if (confirm('Reset WhatsApp session and generate a new QR code?')) {
+        if (qrStatusText) qrStatusText.textContent = 'Resetting session...';
+        setConnectedState(false);
+        updateQrCode(null);
         await window.electronAPI?.unlinkDevice();
-        btnUnlink.textContent = 'Unlink';
     }
-});
+}
+
+btnUnlink?.addEventListener('click', handleUnlink);
+btnResetSession?.addEventListener('click', handleUnlink);
 
 // State Management
 function setConnectedState(isConnected, statusData = {}) {
@@ -100,7 +106,24 @@ function addFeedEvent(event) {
     feedList.prepend(item);
 }
 
-// IPC Subscriptions
+// Polling & IPC Sync
+async function syncState() {
+    try {
+        if (!window.electronAPI) return;
+        const state = await window.electronAPI.getInitialState();
+        if (state) {
+            setConnectedState(state.isWhatsAppConnected, state);
+            if (!state.isWhatsAppConnected) {
+                if (state.qrDataUrl) {
+                    updateQrCode(state.qrDataUrl);
+                } else if (qrStatusText) {
+                    qrStatusText.textContent = 'Connecting to WhatsApp...';
+                }
+            }
+        }
+    } catch (_) {}
+}
+
 if (window.electronAPI) {
     window.electronAPI.onQrUpdate((qrData) => {
         if (qrData?.dataUrl) {
@@ -117,13 +140,7 @@ if (window.electronAPI) {
         addFeedEvent(event);
     });
 
-    // Initial Load
-    window.electronAPI.getInitialState().then((state) => {
-        if (state) {
-            setConnectedState(state.isWhatsAppConnected, state);
-            if (!state.isWhatsAppConnected && state.qrDataUrl) {
-                updateQrCode(state.qrDataUrl);
-            }
-        }
-    });
+    // Run sync immediately and poll every 1 second
+    syncState();
+    setInterval(syncState, 1000);
 }

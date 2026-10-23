@@ -18,10 +18,8 @@ npm-debug.log*
 # Test and media files
 *.mp4
 *.apk
-!release/*.apk
-release/*.exe
-release/*.zip
 *.xapk
+release/
 
 # OS generated files
 .DS_Store

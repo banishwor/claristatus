@@ -80,19 +80,34 @@ export function getCompanionStatus() {
 export async function logoutAndReset() {
     try {
         if (sock) {
-            try { await sock.logout(); } catch (_) {}
+            try { sock.end(undefined); } catch (_) {}
             sock = null;
         }
         isConnected = false;
         currentQRDataUrl = null;
         currentRawQR = null;
+
         if (fs.existsSync(AUTH_DIR)) {
-            fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+            try {
+                fs.rmSync(AUTH_DIR, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+            } catch (e) {
+                console.warn('[Companion] Error removing AUTH_DIR:', e.message);
+            }
         }
+
+        if (fs.existsSync(localAuth)) {
+            try {
+                fs.rmSync(localAuth, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+            } catch (e) {
+                console.warn('[Companion] Error removing localAuth:', e.message);
+            }
+        }
+
         eventListeners.onConnectionChange({ isConnected: false, reason: 'unlinked' });
-        await startWhatsAppClient();
+        setTimeout(() => startWhatsAppClient(), 400);
         return { success: true };
     } catch (err) {
+        console.error('[Companion] Reset error:', err);
         return { success: false, error: err.message };
     }
 }

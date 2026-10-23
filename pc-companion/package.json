@@ -21,6 +21,7 @@
       "server.js",
       "discovery.js",
       "preload.cjs",
+      "assets/**/*",
       "ui/**/*",
       "package.json",
       "node_modules/**/*",
@@ -28,7 +29,8 @@
       "!**/*.log"
     ],
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "icon": "assets/icon.ico"
     }
   },
   "dependencies": {

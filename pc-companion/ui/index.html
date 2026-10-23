@@ -15,6 +15,7 @@
         </div>
         <div class="titlebar-controls">
             <button id="btn-win-minimize" class="control-btn" title="Minimize">─</button>
+            <button id="btn-win-maximize" class="control-btn" title="Maximize / Restore">□</button>
             <button id="btn-win-close" class="control-btn close" title="Close to Tray">✕</button>
         </div>
     </header>
@@ -45,7 +46,7 @@
                 </div>
                 <div class="step-item">
                     <div class="step-number">2</div>
-                    <div class="step-text">Tap Menu <strong>⋮</strong> or Settings $\rightarrow$ <strong>Linked Devices</strong>.</div>
+                    <div class="step-text">Tap Menu <strong>⋮</strong> or Settings ➔ <strong>Linked Devices</strong>.</div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">3</div>
@@ -56,16 +57,17 @@
 
         <!-- VIEW 2: CONNECTED & ONLINE -->
         <section id="view-connected" class="view">
-            <!-- Hero Status -->
+            <!-- Compact Hero Status -->
             <div class="status-hero">
-                <div class="status-badge">
-                    <span class="pulse-dot"></span>
-                    <span>ONLINE & READY</span>
-                </div>
-                <h2 class="hero-title">ClariStatus Companion</h2>
-                <div class="linked-phone-pill" id="linked-phone-pill">
-                    <span class="phone-icon">📱</span>
-                    <span id="val-linked-phone">WhatsApp Linked</span>
+                <div class="hero-top-row">
+                    <div class="status-badge">
+                        <span class="pulse-dot"></span>
+                        <span>ONLINE & READY</span>
+                    </div>
+                    <div class="linked-phone-pill" id="linked-phone-pill">
+                        <span class="phone-icon">📱</span>
+                        <span id="val-linked-phone">Detecting WhatsApp...</span>
+                    </div>
                 </div>
                 <p class="hero-subtitle">Ready to receive 1080p Full HD statuses directly from your phone</p>
             </div>
@@ -95,7 +97,7 @@
                     <span class="info-val" id="val-hostname">Detecting...</span>
                 </div>
                 <div class="info-card">
-                    <span class="info-label">Local Wi-Fi IP</span>
+                    <span class="info-label">Wi-Fi IP</span>
                     <div class="info-val">
                         <span id="val-ip">127.0.0.1:3000</span>
                         <button class="copy-btn" id="btn-copy-ip" title="Copy IP">Copy</button>
@@ -104,29 +106,28 @@
                 <div class="info-card" style="grid-column: span 2;">
                     <span class="info-label">Auto-Discovery Engine</span>
                     <span class="info-val" style="color: var(--emerald-light);">
-                        <span>📡 Active on Port 3001</span>
+                        <span>📡 UDP Port 3001</span>
                         <span class="discovery-badge">Instant Phone Pairing</span>
                     </span>
                 </div>
             </div>
 
-            <!-- Quick Guide Card -->
+            <!-- Compact Quick Guide Strip -->
             <div class="guide-card">
-                <div class="guide-title">
-                    <span>💡 How to Post 1080p to WhatsApp:</span>
-                </div>
                 <div class="guide-steps">
                     <div class="guide-step">
                         <span class="step-badge">1</span>
-                        <span>Compress video in <strong>ClariStatus</strong> app</span>
+                        <span>Compress Video</span>
                     </div>
+                    <span class="guide-arrow">➔</span>
                     <div class="guide-step">
                         <span class="step-badge">2</span>
-                        <span>Tap <strong>1080p (PC Companion)</strong> to upload</span>
+                        <span>Tap <strong>1080p</strong></span>
                     </div>
+                    <span class="guide-arrow">➔</span>
                     <div class="guide-step">
                         <span class="step-badge">3</span>
-                        <span>In WhatsApp on phone, tap <strong>Forward (➔)</strong> $\rightarrow$ <strong>My Status</strong></span>
+                        <span>Forward ➔ <strong>My Status</strong></span>
                     </div>
                 </div>
             </div>

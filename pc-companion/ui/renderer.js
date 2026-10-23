@@ -24,6 +24,7 @@ const feedEmpty = document.getElementById('feed-empty');
 const btnClearFeed = document.getElementById('btn-clear-feed');
 
 const btnWinMinimize = document.getElementById('btn-win-minimize');
+const btnWinMaximize = document.getElementById('btn-win-maximize');
 const btnWinClose = document.getElementById('btn-win-close');
 const btnMinimizeTray = document.getElementById('btn-minimize-tray');
 const btnUnlink = document.getElementById('btn-unlink');
@@ -68,6 +69,10 @@ function playSuccessChime() {
 // Window Controls
 btnWinMinimize?.addEventListener('click', () => {
     window.electronAPI?.minimizeWindow();
+});
+
+btnWinMaximize?.addEventListener('click', () => {
+    window.electronAPI?.maximizeWindow();
 });
 
 btnWinClose?.addEventListener('click', () => {

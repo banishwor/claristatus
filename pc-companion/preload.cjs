@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onUploadEvent: (callback) => ipcRenderer.on('upload-event', (_event, data) => callback(data)),
     
     minimizeWindow: () => ipcRenderer.send('window-minimize'),
+    maximizeWindow: () => ipcRenderer.send('window-maximize'),
     closeToTray: () => ipcRenderer.send('window-close-to-tray'),
     unlinkDevice: () => ipcRenderer.invoke('unlink-device'),
     copyToClipboard: (text) => ipcRenderer.send('copy-clipboard', text),

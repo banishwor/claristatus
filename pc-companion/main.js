@@ -21,9 +21,11 @@ function createTrayIcon() {
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 520,
-        height: 680,
-        resizable: false,
+        width: 540,
+        height: 720,
+        minWidth: 460,
+        minHeight: 580,
+        resizable: true,
         frame: false,
         backgroundColor: '#090D14',
         webPreferences: {
@@ -92,6 +94,16 @@ function setupTray() {
 // IPC Handlers
 ipcMain.on('window-minimize', () => {
     if (mainWindow) mainWindow.minimize();
+});
+
+ipcMain.on('window-maximize', () => {
+    if (mainWindow) {
+        if (mainWindow.isMaximized()) {
+            mainWindow.unmaximize();
+        } else {
+            mainWindow.maximize();
+        }
+    }
 });
 
 ipcMain.on('window-close-to-tray', () => {

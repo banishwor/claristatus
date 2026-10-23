@@ -17,6 +17,8 @@ import { startDiscoveryService } from './discovery.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+
 const USER_DATA_DIR = process.env.APPDATA 
     ? path.join(process.env.APPDATA, 'ClariStatusCompanion') 
     : path.resolve(__dirname, '.claristatus_data');
@@ -118,7 +120,16 @@ async function startWhatsAppClient() {
             fs.mkdirSync(AUTH_DIR, { recursive: true });
         }
         const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
-        const { version } = await fetchLatestBaileysVersion();
+        let version = [2, 3000, 1015901307];
+        try {
+            const fetched = await Promise.race([
+                fetchLatestBaileysVersion(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2500))
+            ]);
+            if (fetched?.version) version = fetched.version;
+        } catch (e) {
+            console.log('[Baileys] Using default protocol version:', version.join('.'));
+        }
 
         sock = makeWASocket({
             version,

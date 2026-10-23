@@ -109,8 +109,30 @@ function addFeedEvent(event) {
 // Polling & IPC Sync
 async function syncState() {
     try {
-        if (!window.electronAPI) return;
-        const state = await window.electronAPI.getInitialState();
+        let state = null;
+        if (window.electronAPI) {
+            try {
+                state = await window.electronAPI.getInitialState();
+            } catch (_) {}
+        }
+        
+        // Direct HTTP fallback
+        if (!state || (!state.isWhatsAppConnected && !state.qrDataUrl)) {
+            try {
+                const [statusRes, qrRes] = await Promise.all([
+                    fetch('http://127.0.0.1:3000/status').then(r => r.json()).catch(() => null),
+                    fetch('http://127.0.0.1:3000/qr').then(r => r.json()).catch(() => null)
+                ]);
+                if (statusRes || qrRes) {
+                    state = {
+                        ...(state || {}),
+                        ...(statusRes || {}),
+                        qrDataUrl: qrRes?.qrDataUrl || state?.qrDataUrl
+                    };
+                }
+            } catch (_) {}
+        }
+
         if (state) {
             setConnectedState(state.isWhatsAppConnected, state);
             if (!state.isWhatsAppConnected) {
@@ -139,8 +161,8 @@ if (window.electronAPI) {
     window.electronAPI.onUploadEvent((event) => {
         addFeedEvent(event);
     });
-
-    // Run sync immediately and poll every 1 second
-    syncState();
-    setInterval(syncState, 1000);
 }
+
+// Run sync immediately and poll every 1 second
+syncState();
+setInterval(syncState, 1000);

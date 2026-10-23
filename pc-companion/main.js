@@ -45,44 +45,48 @@ function createWindow() {
 }
 
 function setupTray() {
-    const icon = createTrayIcon();
-    tray = new Tray(icon);
-    tray.setToolTip('ClariStatus Companion (Online)');
+    try {
+        const icon = createTrayIcon();
+        tray = new Tray(icon);
+        tray.setToolTip('ClariStatus Companion (Online)');
 
-    const contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Open ClariStatus Companion',
-            click: () => {
-                if (mainWindow) {
-                    mainWindow.show();
-                    mainWindow.focus();
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: 'Open ClariStatus Companion',
+                click: () => {
+                    if (mainWindow) {
+                        mainWindow.show();
+                        mainWindow.focus();
+                    }
+                }
+            },
+            {
+                label: 'Copy Local IP',
+                click: () => {
+                    const status = getCompanionStatus();
+                    clipboard.writeText(`${status.localIp}:${status.port}`);
+                }
+            },
+            { type: 'separator' },
+            {
+                label: 'Quit',
+                click: () => {
+                    app.isQuitting = true;
+                    app.quit();
                 }
             }
-        },
-        {
-            label: 'Copy Local IP',
-            click: () => {
-                const status = getCompanionStatus();
-                clipboard.writeText(`${status.localIp}:${status.port}`);
-            }
-        },
-        { type: 'separator' },
-        {
-            label: 'Quit',
-            click: () => {
-                app.isQuitting = true;
-                app.quit();
-            }
-        }
-    ]);
+        ]);
 
-    tray.setContextMenu(contextMenu);
-    tray.on('double-click', () => {
-        if (mainWindow) {
-            mainWindow.show();
-            mainWindow.focus();
-        }
-    });
+        tray.setContextMenu(contextMenu);
+        tray.on('double-click', () => {
+            if (mainWindow) {
+                mainWindow.show();
+                mainWindow.focus();
+            }
+        });
+    } catch (err) {
+        console.warn('[Tray] Notice:', err.message);
+    }
 }
 
 // IPC Handlers

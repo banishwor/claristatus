@@ -56,15 +56,39 @@
 
         <!-- VIEW 2: CONNECTED & ONLINE -->
         <section id="view-connected" class="view">
+            <!-- Hero Status -->
             <div class="status-hero">
                 <div class="status-badge">
                     <span class="pulse-dot"></span>
                     <span>ONLINE & READY</span>
                 </div>
-                <h2 class="hero-title">WhatsApp Linked</h2>
-                <p class="hero-subtitle">Ready to receive 1080p Full HD videos from ClariStatus Android</p>
+                <h2 class="hero-title">ClariStatus Companion</h2>
+                <div class="linked-phone-pill" id="linked-phone-pill">
+                    <span class="phone-icon">📱</span>
+                    <span id="val-linked-phone">WhatsApp Linked</span>
+                </div>
+                <p class="hero-subtitle">Ready to receive 1080p Full HD statuses directly from your phone</p>
             </div>
 
+            <!-- Active Upload Progress Card (Dynamic) -->
+            <div class="active-transfer-card" id="card-active-transfer" style="display: none;">
+                <div class="transfer-header">
+                    <div class="transfer-status-tag">
+                        <span class="transfer-spinner" id="transfer-spinner"></span>
+                        <span id="transfer-stage-text">Receiving 1080p Video...</span>
+                    </div>
+                    <span class="transfer-percent" id="transfer-percent">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="transfer-progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="transfer-meta">
+                    <span id="transfer-bytes-text">0.0 MB / 0.0 MB</span>
+                    <span id="transfer-target-phone" class="meta-pill">Target: Phone</span>
+                </div>
+            </div>
+
+            <!-- Info Grid -->
             <div class="info-grid">
                 <div class="info-card">
                     <span class="info-label">Host Machine</span>
@@ -78,20 +102,45 @@
                     </div>
                 </div>
                 <div class="info-card" style="grid-column: span 2;">
-                    <span class="info-label">Wi-Fi Auto-Discovery</span>
+                    <span class="info-label">Auto-Discovery Engine</span>
                     <span class="info-val" style="color: var(--emerald-light);">
-                        <span>📡 Active (Port 3001)</span>
-                        <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">Zero-config phone pairing</span>
+                        <span>📡 Active on Port 3001</span>
+                        <span class="discovery-badge">Instant Phone Pairing</span>
                     </span>
                 </div>
             </div>
 
+            <!-- Quick Guide Card -->
+            <div class="guide-card">
+                <div class="guide-title">
+                    <span>💡 How to Post 1080p to WhatsApp:</span>
+                </div>
+                <div class="guide-steps">
+                    <div class="guide-step">
+                        <span class="step-badge">1</span>
+                        <span>Compress video in <strong>ClariStatus</strong> app</span>
+                    </div>
+                    <div class="guide-step">
+                        <span class="step-badge">2</span>
+                        <span>Tap <strong>1080p (PC Companion)</strong> to upload</span>
+                    </div>
+                    <div class="guide-step">
+                        <span class="step-badge">3</span>
+                        <span>In WhatsApp on phone, tap <strong>Forward (➔)</strong> $\rightarrow$ <strong>My Status</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
             <div class="feed-card">
                 <div class="feed-header">
                     <span class="feed-title">
                         <span>⚡ Live Activity Log</span>
                     </span>
-                    <span id="activity-status" style="font-size: 11px; color: var(--text-muted);">Listening</span>
+                    <div class="feed-actions">
+                        <span id="activity-status" style="font-size: 11px; color: var(--text-muted);">Listening</span>
+                        <button id="btn-clear-feed" class="copy-btn" style="display: none; margin-left: 8px;">Clear</button>
+                    </div>
                 </div>
                 <div class="feed-list" id="feed-list">
                     <div class="feed-empty" id="feed-empty">
@@ -100,12 +149,13 @@
                 </div>
             </div>
 
+            <!-- Action Buttons -->
             <div class="action-row">
                 <button class="btn btn-primary" id="btn-minimize-tray">
                     <span>🔔 Minimize to Tray</span>
                 </button>
                 <button class="btn btn-danger" id="btn-unlink">
-                    <span>Unlink</span>
+                    <span>Unlink WhatsApp</span>
                 </button>
             </div>
         </section>

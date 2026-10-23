@@ -67,6 +67,10 @@ export function getLocalIpAddress() {
 }
 
 export function getCompanionStatus() {
+    let linkedPhone = null;
+    if (sock && sock.user && sock.user.id) {
+        linkedPhone = sock.user.id.split(':')[0].replace(/\D/g, '');
+    }
     return {
         status: 'online',
         service: 'ClariStatus-PC-Companion',
@@ -74,7 +78,8 @@ export function getCompanionStatus() {
         localIp: getLocalIpAddress(),
         port: PORT,
         isWhatsAppConnected: isConnected,
-        defaultPhone: config.phone || null,
+        linkedPhone: linkedPhone || config.phone || null,
+        defaultPhone: linkedPhone || config.phone || null,
         hasQr: !!currentQRDataUrl
     };
 }
@@ -193,7 +198,6 @@ export function startCompanionServer(callbacks = {}) {
 
     const app = express();
     app.use(cors());
-    app.use(express.raw({ type: ['video/mp4', 'application/octet-stream'], limit: '100mb' }));
     app.use(express.json());
 
     // Status endpoint for phone
@@ -221,8 +225,8 @@ export function startCompanionServer(callbacks = {}) {
         res.json({ success: true, phone: cleanPhone });
     });
 
-    // Main 1080p status receiver endpoint
-    app.post('/send-hd', async (req, res) => {
+    // Main 1080p status receiver endpoint with live streaming progress
+    app.post('/send-hd', (req, res) => {
         try {
             if (!isConnected || !sock) {
                 return res.status(503).json({
@@ -230,55 +234,133 @@ export function startCompanionServer(callbacks = {}) {
                 });
             }
 
-            const rawPhone = req.headers['x-target-phone'] || req.query.phone || config.phone;
-            const targetPhone = (rawPhone ? String(rawPhone) : '').replace(/\D/g, '');
+            let targetPhone = (req.headers['x-target-phone'] || req.query.phone || '').replace(/\D/g, '');
+            if (!targetPhone && sock?.user?.id) {
+                targetPhone = sock.user.id.split(':')[0].replace(/\D/g, '');
+            }
+            if (!targetPhone && config.phone) {
+                targetPhone = config.phone.replace(/\D/g, '');
+            }
 
             if (!targetPhone) {
                 return res.status(400).json({
-                    error: 'Target phone number not specified. Provide header x-target-phone or call /set-phone'
+                    error: 'Target phone number not specified. Provide header x-target-phone or link WhatsApp.'
                 });
             }
 
-            const videoBuffer = req.body;
-            if (!videoBuffer || !videoBuffer.length) {
-                return res.status(400).json({ error: 'No video payload received' });
-            }
+            const contentLength = parseInt(req.headers['content-length'] || '0', 10);
+            const totalMb = contentLength > 0 ? (contentLength / (1024 * 1024)).toFixed(1) : '?';
+            let receivedBytes = 0;
+            const chunks = [];
 
-            const sizeMb = (videoBuffer.length / (1024 * 1024)).toFixed(2);
             eventListeners.onUploadEvent({
                 type: 'upload_start',
+                stage: 'receiving',
                 targetPhone,
-                sizeMb,
+                totalBytes: contentLength,
+                totalMb,
+                receivedMb: '0.0',
+                percent: 0,
                 timestamp: new Date().toLocaleTimeString()
             });
 
-            const recipientJid = `${targetPhone}@s.whatsapp.net`;
+            req.on('data', (chunk) => {
+                chunks.push(chunk);
+                receivedBytes += chunk.length;
+                const percent = contentLength > 0 ? Math.min(95, Math.round((receivedBytes / contentLength) * 100)) : 50;
+                const receivedMb = (receivedBytes / (1024 * 1024)).toFixed(1);
 
-            await sock.sendMessage(recipientJid, {
-                video: videoBuffer,
-                caption: '1080p Full HD Status (Forward this to My Status)',
-                mimetype: 'video/mp4'
+                eventListeners.onUploadEvent({
+                    type: 'upload_progress',
+                    stage: 'receiving',
+                    targetPhone,
+                    percent,
+                    receivedBytes,
+                    totalBytes: contentLength,
+                    receivedMb,
+                    totalMb,
+                    timestamp: new Date().toLocaleTimeString()
+                });
             });
 
-            eventListeners.onUploadEvent({
-                type: 'upload_success',
-                targetPhone,
-                sizeMb,
-                timestamp: new Date().toLocaleTimeString()
+            req.on('end', async () => {
+                try {
+                    const videoBuffer = Buffer.concat(chunks);
+                    if (!videoBuffer.length) {
+                        return res.status(400).json({ error: 'No video payload received' });
+                    }
+
+                    const sizeMb = (videoBuffer.length / (1024 * 1024)).toFixed(1);
+                    eventListeners.onUploadEvent({
+                        type: 'upload_progress',
+                        stage: 'transmitting',
+                        targetPhone,
+                        percent: 98,
+                        sizeMb,
+                        receivedMb: sizeMb,
+                        totalMb: sizeMb,
+                        message: 'Injecting 1080p FHD stream to WhatsApp...',
+                        timestamp: new Date().toLocaleTimeString()
+                    });
+
+                    const recipientJid = `${targetPhone}@s.whatsapp.net`;
+                    await sock.sendMessage(recipientJid, {
+                        video: videoBuffer,
+                        caption: '1080p Full HD Status (Forward this to My Status)',
+                        mimetype: 'video/mp4'
+                    });
+
+                    eventListeners.onUploadEvent({
+                        type: 'upload_success',
+                        stage: 'completed',
+                        targetPhone,
+                        sizeMb,
+                        percent: 100,
+                        timestamp: new Date().toLocaleTimeString()
+                    });
+
+                    res.json({
+                        success: true,
+                        message: '1080p video delivered to WhatsApp! Open WhatsApp, tap Forward (➔), and choose My Status.'
+                    });
+                } catch (err) {
+                    console.error('[Companion] Error delivering video:', err);
+                    eventListeners.onUploadEvent({
+                        type: 'upload_error',
+                        stage: 'failed',
+                        error: err.message,
+                        timestamp: new Date().toLocaleTimeString()
+                    });
+                    if (!res.headersSent) {
+                        res.status(500).json({ error: err.message || 'Failed to send video via WhatsApp' });
+                    }
+                }
             });
 
-            res.json({
-                success: true,
-                message: '1080p video delivered to WhatsApp! Open WhatsApp, tap Forward (➔), and choose My Status.'
+            req.on('error', (err) => {
+                console.error('[Companion] Stream error:', err);
+                eventListeners.onUploadEvent({
+                    type: 'upload_error',
+                    stage: 'failed',
+                    error: err.message,
+                    timestamp: new Date().toLocaleTimeString()
+                });
+                if (!res.headersSent) {
+                    res.status(500).json({ error: err.message });
+                }
             });
+
         } catch (err) {
-            console.error('[Companion] Error delivering video:', err);
+            console.error('[Companion] Error handling /send-hd:', err);
             eventListeners.onUploadEvent({
                 type: 'upload_error',
+                stage: 'failed',
                 error: err.message,
                 timestamp: new Date().toLocaleTimeString()
             });
-            res.status(500).json({ error: err.message || 'Failed to send video via WhatsApp' });
+            if (!res.headersSent) {
+                res.status(500).json({ error: err.message });
+            }
         }
     });
 

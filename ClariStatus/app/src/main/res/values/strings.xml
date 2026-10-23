@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ClariStatus</string>
+    <string name="app_tagline">Crystal-Clear HD Status Compressor</string>
+    <string name="channel_name">Video Processing</string>
+    <string name="channel_description">Notifications for video compression progress and completion</string>
+    <string name="notification_title">Processing Status Video</string>
+    <string name="notification_content">Optimizing video for WhatsApp Status…</string>
+</resources>

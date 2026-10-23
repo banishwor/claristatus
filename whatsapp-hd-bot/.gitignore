@@ -1,0 +1,10 @@
+# Node modules
+node_modules/
+
+# WhatsApp Multi-Device session credentials (CRITICAL: NEVER COMMIT THIS)
+auth_info/
+
+# Logs & temp files
+*.log
+npm-debug.log*
+.DS_Store

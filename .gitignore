@@ -1,0 +1,28 @@
+# Built Android files
+.gradle/
+build/
+app/build/
+local.properties
+*.iml
+.idea/
+.kotlin/
+*.hprof
+/captures
+
+# Node.js Companion Bot
+**/node_modules/
+**/auth_info/
+*.log
+npm-debug.log*
+
+# Test and media files
+*.mp4
+*.apk
+*.xapk
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Agent scratch and cache
+.agents/

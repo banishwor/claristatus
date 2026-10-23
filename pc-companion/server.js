@@ -17,9 +17,22 @@ import { startDiscoveryService } from './discovery.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
-const CONFIG_FILE = path.resolve(__dirname, 'config.json');
-const AUTH_DIR = path.resolve(__dirname, 'auth_info');
+const USER_DATA_DIR = process.env.APPDATA 
+    ? path.join(process.env.APPDATA, 'ClariStatusCompanion') 
+    : path.resolve(__dirname, '.claristatus_data');
+
+if (!fs.existsSync(USER_DATA_DIR)) {
+    try { fs.mkdirSync(USER_DATA_DIR, { recursive: true }); } catch (_) {}
+}
+
+// Migrate existing auth_info if present
+const localAuth = path.resolve(__dirname, 'auth_info');
+const AUTH_DIR = path.join(USER_DATA_DIR, 'auth_info');
+if (fs.existsSync(localAuth) && !fs.existsSync(AUTH_DIR)) {
+    try { fs.cpSync(localAuth, AUTH_DIR, { recursive: true }); } catch (_) {}
+}
+
+const CONFIG_FILE = path.join(USER_DATA_DIR, 'config.json');
 
 let config = { phone: '' };
 if (fs.existsSync(CONFIG_FILE)) {

@@ -20,7 +20,7 @@
       "main.js",
       "server.js",
       "discovery.js",
-      "preload.js",
+      "preload.cjs",
       "ui/**/*",
       "package.json",
       "node_modules/**/*",
